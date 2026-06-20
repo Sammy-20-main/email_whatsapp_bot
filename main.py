@@ -14,7 +14,8 @@ from email import message_from_bytes
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 # ─── CONFIG (loaded from GitHub Secrets) ──────────────────────────────────────
 
@@ -101,8 +102,7 @@ def extract_body(email_msg):
 
 def summarize_with_gemini(emails):
     """Send emails to Gemini Flash and get a WhatsApp-ready summary."""
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     email_text = ""
     for i, e in enumerate(emails, 1):
@@ -122,7 +122,10 @@ Write ONE short paragraph (4-5 sentences max) that:
 
 Be concise. No bullet points. Just one clean paragraph."""
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
     return response.text.strip()
 
 # ─── SEND TO WHATSAPP VIA GREEN API ───────────────────────────────────────────
