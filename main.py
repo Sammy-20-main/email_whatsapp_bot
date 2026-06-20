@@ -137,8 +137,11 @@ def send_whatsapp(message):
         f"/sendMessage/{GREENAPI_TOKEN}"
     )
 
+    # Supports both group chatId (ends with @g.us) and personal number
+    chat_id = GREENAPI_PHONE if "@g.us" in GREENAPI_PHONE else f"{GREENAPI_PHONE}@c.us"
+
     payload = json.dumps({
-        "chatId": f"{GREENAPI_PHONE}@c.us",
+        "chatId": chat_id,
         "message": message
     }).encode("utf-8")
 
